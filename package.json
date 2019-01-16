@@ -1,0 +1,14 @@
+{
+  "name": "express-lambda-serverless",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.local.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.388.0",
+    "express": "^4.16.4",
+    "serverless-http": "^1.8.0"
+  }
+}
