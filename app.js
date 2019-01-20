@@ -1,16 +1,34 @@
 const express = require('express');
 const AWS = require('aws-sdk');
 
-const app = express();
-
 const CALCULATIONS_TABLE = process.env.CALCULATIONS_TABLE;
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const sns = new AWS.SNS();
+
+const app = express();
 
 app.use(express.urlencoded({extended: true, strict: false}));
 app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
+});
+
+// Create publish function
+function publishSnsTopic(data) {
+  const params = {
+    Message: JSON.stringify(data),
+    TopicArn: `arn:aws:sns:eu-central-1:066549572091:yotam-store-sns`
+  };
+
+  return sns.publish(params).promise();
+}
+
+// Create Calculation endpoint
+app.post('/calculations', async (req, res) => {
+  const { calcId } = req.body;
+  await publishSnsTopic(calcId);
+  res.json({calcId});
 });
 
 // Get Calculation endpoint
@@ -40,31 +58,6 @@ app.get('/calculations/:calcId', (req, res) => {
   });
 });
 
-// Create Calculation endpoint
-app.post('/calculations', (req, res) => {
-  const { calcId } = req.body;
-
-  if (typeof calcId !== 'string') {
-    res.status(400).json({ error: '"calcId" must be a string' });
-  }
-
-  const params = {
-    TableName: CALCULATIONS_TABLE,
-    Item: {
-      calcId: calcId,
-      result: Math.pow(2, calcId),
-    },
-  };
-
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      console.log(error);
-      res.status(400).json({ error: 'Could not create calculation.' });
-    }
-    res.json({ calcId, result: Math.pow(2, calcId) });
-  });
-});
-
 // 404 Not Found
 app.use(function (req, res, next) {
   console.log('404 Not Found');
@@ -73,7 +66,6 @@ app.use(function (req, res, next) {
 
 // Error handler
 app.use(function (err, req, res, next) {
-  console.log('500 Error');
   console.error(err.stack);
   res.status(500).send('Something broke!')
 });

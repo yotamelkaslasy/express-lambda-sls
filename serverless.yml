@@ -19,6 +19,10 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - { "Fn::GetAtt": ["CalculationsDynamoDBTable", "Arn" ] }
+    - Effect: Allow
+      Resource: "*"
+      Action:
+        - "sns:*"
   environment:
     CALCULATIONS_TABLE: ${self:custom.tableName}
 
@@ -28,6 +32,10 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  store:
+    handler: index.store
+    events:
+      - sns: 'yotam-store-sns'
 
 resources:
   Resources:
