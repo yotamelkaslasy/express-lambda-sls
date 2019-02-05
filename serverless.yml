@@ -1,4 +1,4 @@
-service: my-express-application
+service: expressAPI
 
 provider:
   name: aws
@@ -7,8 +7,8 @@ provider:
   region: eu-central-1
 
 functions:
-  app:
-    handler: index.handler
+  server:
+    handler: index.server
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'

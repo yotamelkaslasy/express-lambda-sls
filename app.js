@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
 
 const apiRouter = require('./api');
-const helpers = require('./helpers');
+const errorHandler = require('./helpers/errorHandler');
 
 class Server {
   constructor() {
@@ -14,7 +13,6 @@ class Server {
 
   setMiddlewares() {
     this.server.use(cors());
-    this.server.use(morgan('dev'));
     this.server.use(express.urlencoded({extended: true, strict: false}))
     this.server.use(express.json());
   }
@@ -28,8 +26,8 @@ class Server {
   }
 
   catchErrors() {
-    this.server.use(helpers.errorHandler.notFound);
-    this.server.use(helpers.errorHandler.internalServerError);
+    this.server.use(errorHandler.notFound);
+    this.server.use(errorHandler.internalServerError);
   }
 
   initialize() {
