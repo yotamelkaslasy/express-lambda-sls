@@ -4,11 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node app.local.js"
+    "deploy": "serverless deploy"
   },
   "dependencies": {
-    "aws-sdk": "^2.388.0",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
-    "serverless-http": "^1.8.0"
+    "morgan": "^1.9.1",
+    "serverless-http": "^1.9.0"
   }
 }
